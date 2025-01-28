@@ -1,0 +1,4 @@
+repository "Actividad_1_Miguel_Goyanes_Quelle-main@MiguelGQ@cloud"
+  path "/"
+    br "/main"
+    co "/main"
