@@ -31,9 +31,9 @@ Material:
     - _DisplacementIntensity: 0.1
     - _QueueControl: 0
     - _metallic: 0
-    - _smoothness: 0.35
+    - _smoothness: 0.447
     m_Colors:
-    - _base_color: {r: 0, g: 0, b: 0, a: 0}
+    - _base_color: {r: 0.35686275, g: 0.35686275, b: 0.35686275, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &2569359662674504138
 MonoBehaviour:
