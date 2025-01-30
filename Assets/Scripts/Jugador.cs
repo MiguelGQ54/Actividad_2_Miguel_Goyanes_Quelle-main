@@ -1,8 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -15,22 +11,19 @@ public class Jugador : MonoBehaviour
     [SerializeField] private GameObject linterna;
     [SerializeField] private GameObject SFXPasos; //Audio source que contiene el clip de los pasos y se ejecuta en bucle mientras esta activo
     [SerializeField] private GameObject Alien;
-    [SerializeField] private CanvasManager canvasManager;
+    [SerializeField] private CanvasManager canvasManager; //Canvas manager para actualizar la barra de energia
 
-    [SerializeField] float distanciaX, distanciaZ;
-
+    float distanciaX, distanciaZ;
     bool lockCursor = true; //Bloquear el cursor
     private float cameraPitch = 0.0f; //Inclinacion de la camara
     private Rigidbody rb;
     private float hInput, vInput; //Entradas de movimiento
-    private Vector3 posicionInicial;
     private float velocidadCorrer, velocidadAndar; //Velocidad al correr y al andar
     private bool seHaCansado, estadoLinterna; //1-Bool para controlar la recuperacion de la energia; 2-Apagar/encender linterna
 
 
-    void Start()
+    void Awake()
     {
-        posicionInicial = transform.position; //Se guarda la posicion inicial
         rb = GetComponent<Rigidbody>();
         if (lockCursor)
         {
@@ -53,7 +46,7 @@ public class Jugador : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Mouse0)) //Con el click izquierdo se enciende o se apaga la linterna
         {
-            UsarLinterna();
+            ActivarLinterna();
         }
     }
 
@@ -105,7 +98,7 @@ public class Jugador : MonoBehaviour
             velocidad.y = rb.velocity.y;
             rb.velocity = velocidad;
 
-            SFXPasos.SetActive(true);
+            SFXPasos.SetActive(true); //Al moverse se activa el audio source de los pasos
         }
         else
         {
@@ -115,42 +108,42 @@ public class Jugador : MonoBehaviour
 
     void Correr()
     {
-        if (Input.GetKey(KeyCode.LeftShift) && energia>=0 && seHaCansado == false)
+        if (Input.GetKey(KeyCode.LeftShift) && energia>=0 && seHaCansado == false) //Al pulsar shift, si queda energia y el jugador no se ha cansado recientemente se puede correr
         {
-            velocidadMovimiento = velocidadCorrer;
-            energia -= 10 * Time.deltaTime;
+            velocidadMovimiento = velocidadCorrer; //Se aumenta la velocidad de movimiento
+            energia -= 10 * Time.deltaTime; //Se gasta energia al correr
         }
         else
         {
-            velocidadMovimiento = velocidadAndar;
+            velocidadMovimiento = velocidadAndar; //Si no se esta corriendo la velocidad es la normal
         }
 
-        if (energia < 100 && !Input.GetKey(KeyCode.LeftShift))
+        if (energia < 100 && !Input.GetKey(KeyCode.LeftShift)) //Si la energia es inferior a 100 (energia maxima) y no se esta corriendo se recupera con el tiempo
         {
-            energia += 10 * Time.deltaTime;
+            energia += 20 * Time.deltaTime;
         }
         
-        if (energia <= 0)
+        if (energia <= 0) //Si se gasta toda la energia se entra en el estado de cansado, en el que no se puede correr hasta salir de el
         {
             velocidadMovimiento = velocidadAndar;
             seHaCansado = true;
         }
-        else if (energia >=30)
+        else if (energia >=30 && seHaCansado == true) //Al superar el valor de 30 de energia el jugador pierde el estado de cansado si lo tenia activo
         {
             seHaCansado = false;
         }
 
-        canvasManager.BarraEnergia.fillAmount = energia/100;
+        canvasManager.BarraEnergia.fillAmount = energia/100; //Se actualiza la barra de energia en todo momento
     }
 
-    void UsarLinterna()
+    void ActivarLinterna()
     {
-        if (estadoLinterna)
+        if (estadoLinterna) //Si la linterna estaba encendida, se apaga
         {
             linterna.SetActive(false);
             estadoLinterna = false;
         }
-        else
+        else //Si la linterna estaba apagada, se enciende
         {
             linterna.SetActive(true);
             estadoLinterna = true;
@@ -161,16 +154,16 @@ public class Jugador : MonoBehaviour
     {
         //El prefab "Mimic" tiene un problema al añadir colliders a la hora de crear tentaculos, por lo que la deteccion de colisiones se realizara artificialmente mediante la distancia del jugador con el alien
         
-        Vector3 posJugador = transform.position;
-        Vector3 posAlien = Alien.transform.position;
+        Vector3 posJugador = transform.position; //Se toma la posicion del jugador
+        Vector3 posAlien = Alien.transform.position; //Se toma la posicion del alien
 
         distanciaX = Math.Abs(posJugador.x - posAlien.x); //El valor tiene que ser absoluto para evitar que una distancia -20 por ejemplo detecte que el alien esta cerca
         distanciaZ = Math.Abs(posJugador.z - posAlien.z);
 
         if (distanciaX <= 1 && distanciaZ <= 1) //Si se encuentra cerca del jugador se produce la "colision"
         {
-            //UnityEngine.Cursor.lockState = CursorLockMode.None;
-            //SceneManager.LoadScene(0);
+            UnityEngine.Cursor.lockState = CursorLockMode.None;
+            SceneManager.LoadScene(0); //Se vuelve al menu principal; El jugador ha perdido
         }
     }
 }

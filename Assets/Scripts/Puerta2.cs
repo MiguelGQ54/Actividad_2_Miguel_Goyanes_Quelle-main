@@ -1,9 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Audio;    
+using UnityEngine;   
 
-public class Puerta2 : MonoBehaviour //Mismo script que Puerta.cs pero cambiando la direccion en la que se abre
+public class Puerta2 : MonoBehaviour //Mismo script que Puerta.cs pero cambiando la direccion en la que se abre al ser la puerta opuesta
 {
     [SerializeField] private GameManagerSO gM;
     [SerializeField] private int idPuerta;

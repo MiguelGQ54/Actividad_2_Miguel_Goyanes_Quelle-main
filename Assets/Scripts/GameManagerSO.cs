@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(menuName = "GameManager")]
@@ -10,7 +8,6 @@ public class GameManagerSO : ScriptableObject
     public event Action<int> OnAbrirPuerta;
     public event Action<int> OnCerrarPuerta;
     public event Action<int> OnAudioPuerta;
-
 
     public void AbrirPuerta(int idAbrirPuerta)
     {
